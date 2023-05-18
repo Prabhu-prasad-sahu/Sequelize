@@ -22,6 +22,6 @@ db.Sequelize = Sequelize ;
 db.sequelize = sequelize ;
 db.User = require('./userModel')(sequelize, DataTypes )
 db.emp = require('./emp')(sequelize,DataTypes,Model)
-db.sequelize.sync()
-// db.sequelize.drop()
+// db.sequelize.sync()
+db.sequelize.drop()
 module.exports = db ;
