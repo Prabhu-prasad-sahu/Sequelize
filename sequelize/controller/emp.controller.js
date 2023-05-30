@@ -1,7 +1,9 @@
-const { emp, address, empAddrefer } = require("../models/db")
 
-const { Op, Sequelize, QueryTypes } = require('sequelize')
-// await jane.destroy();         // for delete  
+const { emp, address, refer, tech } = require("../models/db")
+
+const { Op, Sequelize, QueryTypes } = require('sequelize');
+const Techdata = require("../models/tech.model");
+
 const add = async (req, rsp) => {
         let User = await emp.create(
                 {
@@ -44,41 +46,41 @@ const users = async (req, rsp) => {
 }
 const oneToOne = async (req, rsp) => {
         try {
-                let User = await emp.create({
-                        firstName: req.body.firstName,
-                        lastName: req.body.lastName
-                })
-                if (User && User.id) {
-                        await address.create({
-                                city: req.body.city,
-                                state: req.body.state,
-                                district: req.body.district,
-                                User_refer_id: User.id
-                        })
-                }
+                // let User = await emp.create({
+                //         firstName: req.body.firstName,
+                //         lastName: req.body.lastName
+                // })
+                // if (User && User.id) {
+                //         await address.create({
+                //                 city: req.body.city,
+                //                 state: req.body.state,
+                //                 district: req.body.district,
+                //                 User_refer_id: User.id
+                //         })
+                // }
                 // =======================================================
-                // let User = await emp.findAll({
-                //         attributes: ['firstName', 'lastName'],
+                let User = await emp.findAll({
+                        attributes: ['firstName', 'lastName'],
+                        include: [{
+                                model: address,
+                                as: 'address_details',
+                                attributes: ['city', 'district', 'state']
+                        }],
+                        where: {
+                                id: 4
+                        }
+                })
+                // ==============================================================
+                // let add = await address.findAll({
+                //         attributes: ['city', 'state'],
                 //         include: [{
-                //                 model: address,
-                //                 as: 'address_details',
-                //                 attributes: ['city', 'district', 'state']
+                //                 model: emp,
+                //                 as: 'User_details',
                 //         }],
                 //         where: {
                 //                 id: 4
                 //         }
                 // })
-                // ==============================================================
-                let add = await address.findAll({
-                        attributes: ['city', 'state'],
-                        include: [{
-                                model: emp,
-                                as: 'User_details',
-                        }],
-                        where: {
-                                // id: 4
-                        }
-                })
                 // rsp.json({ add: add })
                 rsp.json({ User: User })
         } catch (error) {
@@ -88,30 +90,30 @@ const oneToOne = async (req, rsp) => {
 
 let oneToMany = async (req, rsp) => {
         try {
-                let id = req.body.id
-                let user_data = {
-                        firstName: req.body.firstName,
-                        lastName: req.body.lastName
-                }
-                let User_id = await emp.update(user_data, {
-                        where: {
-                                id
-                        }
-                })
-                if (id) {
-                        await address.create({
-                                city: req.body.city,
-                                state: req.body.state,
-                                district: req.body.district,
-                                User_refer_id: id
-                        })
-                }
+                // let id = req.body.id
+                // let user_data = {
+                //         firstName: req.body.firstName,
+                //         lastName: req.body.lastName
+                // }
+                // let User_id = await emp.update(user_data, {
+                //         where: {
+                //                 id
+                //         }
+                // })
+                // if (id) {
+                //         await address.create({
+                //                 city: req.body.city,
+                //                 state: req.body.state,
+                //                 district: req.body.district,
+                //                 User_refer_id: id
+                //         })
+                // }
                 // ==============================================================
                 let User = await emp.findAll({
                         attributes: ['firstName', 'lastName'],
                         include: [{
                                 model: address,
-                                as: 'address_details',
+                                as: 'Address_details',
                                 attributes: ['city', 'district', 'state']
                         }],
                         // where: {
@@ -127,47 +129,152 @@ let oneToMany = async (req, rsp) => {
 
 let manyToMany = async (req, rsp) => {
         try {
-                let User = await emp.create({
-                        firstName: req.body.firstName,
-                        lastName: req.body.lastName
-                })
-                if (User && User.id) {
-                        const addid = await address.create({
-                                city: req.body.city,
-                                state: req.body.state,
-                                district: req.body.district,
-                                User_refer_id: User.id
-                        })
-                        if (addid.id && User.id) {
-                                // console.log(addid.id);
-                                // console.log(User.id);
-
-                                await empAddrefer.create({
-                                        empId: User.id,
-                                        addressId: addid.id
-                                })
-                        }
-                }
-                rsp.send("successfully created")
+                // let User = await emp.create({
+                //         firstName: req.body.firstName,
+                //         lastName: req.body.lastName
+                // })
+                // if (User && User.id) {
+                //         const add = await address.create({
+                //                 city: req.body.city,
+                //                 state: req.body.state,
+                //                 district: req.body.district,
+                //                 User_refer_id: User.id
+                //         })
+                //         console.log(User, add);
+                //         try {
+                //                 if (User.id && add.id) {
+                //                         debugger;
+                //                         console.info('in IF >> ', User.id + " -- " + add.id)
+                //                         const addressRef = refer.create({
+                //                                 empID: User.id,
+                //                                 addressID: add.id
+                //                         })
+                //                         console.info('Add Ref >>> ', addressRef)
+                //                 }
+                //         } catch (error) {
+                //                 console.log(error);
+                //         }
+                // }
+                // rsp.send("successfully created")
 
 
                 // =========================================
-                // let findUser = await emp.findAll({
-                //         attributes: ['firstName', 'lastName'],
+                let findUser = await emp.findAll({
+                        // attributes: ['firstName', 'lastName'],
+                        include: [{
+                                model: address,
+                                as: 'Address_details',
+                                attributes: ['city', 'district', 'state']
+                        }],
+                        // where: {
+                        //         id: 2
+                        // }
+                })
+                rsp.json({ user: findUser })
+                // =====================================================
+                // let updateEmp = await emp.findAll({
+                //         where: {
+                //                 id: req.body.id
+                //         },
                 //         include: [{
                 //                 model: address,
                 //                 as: 'address_details',
                 //                 attributes: ['city', 'district', 'state']
-                //         }],
-                //         // where: {
-                //         //         id: 1
-                //         // }
+                //         }]
                 // })
-                // rsp.json({ user: findUser })
+                // rsp.send(updateEmp);
+                // if (updateEmp.id) {
+                //         await address.create({
+                //                 city: req.body.city,
+                //                 state: req.body.state,
+                //                 district: req.body.district,
+                //                 User_refer_id: updateEmp.id
+                //         })
+                //         if (updateEmp.id && add.id) {
+                //                 console.info('in IF >> ', User.id + " -- " + add.id)
+                //                 const addressRef = refer.create({
+                //                         empID: id,
+                //                         addressID: add.id
+                //                 })
+                //                 console.info('Add Ref >>> ', addressRef)
+                //         }
+                // }
+                // rsp.send("updated")
         } catch (error) {
                 rsp.send(error)
         }
 }
 
+let paranoid = async (req, rsp) => {
+        try {
+                let user = await emp.destroy({
+                        where: {
+                                id: 2
+                        },
+                        force: true // for permanent delet from database
+                });
+                // await post.restore();  // it is use for restore the paranoid data which will be deleted
+                rsp.send({ user })
+        } catch (error) {
+                rsp.send(error)
+        }
+}
 
-module.exports = { users, bio, add, GetSetVertual, oneToOne, oneToMany, manyToMany }
+let eagerLoading = async (req, rsp) => {
+        try {
+                let User = await emp.findAll({
+                        include: [{
+                                model: address,
+                                attributes: ['city', 'district', 'state'],
+                                required: false,
+                                right: true
+                                //if u use INNER JOIN then required : true 
+                                //if u use LEFT OUTER JOIN then no neeed to (required : true)
+                                //if u use RIGHT OUTER JOIN then neeed to (required : true , right : true)
+
+                        }]
+
+                })
+                rsp.send(User);
+        } catch (error) {
+                rsp
+        }
+}
+
+let addTech = async (req, rsp) => {
+        try {
+                // let User = await emp.create({
+                //         firstName: req.body.firstName,
+                //         lastName: req.body.lastName
+                // })
+                // if (User && User.id) {
+                //         let addtech = await tech.create({
+                //                 technology: req.body.technology,
+                //                 Tech_refer_id: User.id
+                //         })
+
+                // }
+                // rsp.send("created succsessfully");
+                // =====================================================================
+
+                // Find one by fullName
+
+
+                // include: [{
+                //         model: tech,
+                // }],
+
+
+                let add = await emp.findAll({
+                        include: [{ model: tech }]
+                })
+
+                console.info("emp-find all >>> ", add)
+                rsp.json({ data: add })
+        } catch (error) {
+                rsp.send("error >>", error)
+        }
+}
+
+module.exports = { users, bio, add, GetSetVertual, oneToOne, oneToMany, manyToMany, paranoid, eagerLoading, addTech }
+

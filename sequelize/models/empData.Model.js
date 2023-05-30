@@ -1,5 +1,5 @@
-let address = require("./address.Model")
-module.exports = (sequelize, DataTypes) => {
+// let address = require("./add.model")
+module.exports = (sequelize, DataTypes, address) => {
   let emp = sequelize.define('emp_data', {
     firstName: {
       type: DataTypes.STRING,
@@ -24,6 +24,9 @@ module.exports = (sequelize, DataTypes) => {
         throw new Error('Do not try to set the `fullName` value!');
       }
     }
+  }, {
+    paranoid: true,
+    deletedAt: "Soft_delete" // 
   });
 
   // emp.hasOne(address);
