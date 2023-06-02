@@ -17,8 +17,8 @@ app.get('/onetoone', empController.oneToOne)
 app.get('/oneToMany', empController.oneToMany)
 app.get('/manytomany', empController.manyToMany);
 app.get("/panaroid", empController.paranoid)
-app.get("/eagerLoading", empController.eagerLoading)
 app.get("/addtech", empController.addTech)
+app.get("/m-to-m", empController.manyToMany)
 
 
 

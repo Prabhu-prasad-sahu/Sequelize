@@ -1,5 +1,5 @@
 
-module.exports = (sequelize, DataTypes, emp) => {
+module.exports = (sequelize, DataTypes, Address) => {
 
     const tech = sequelize.define('Tech', {
         technology: {
@@ -8,27 +8,18 @@ module.exports = (sequelize, DataTypes, emp) => {
         },
         Tech_refer_id: {
             type: DataTypes.INTEGER,
-            references: {
-                model: emp,
-                key: 'id'
-            }
         }
     }, {
         createdAt: true,
         updatedAt: false
     })
-    tech.associate = models => {
-        emp.hasMany(tech, {
-            through: tech
-            // foreignKey: 'Tech_refer_id',
-        });
-        tech.belongsTo(emp, {
-            through: tech
-            // foreignKey: 'Tech_refer_id',
+    tech.associate = (models) => {
+        tech.belongsTo(models.Address, {
+            foreignKey: 'Tech_refer_id',
+            // as: "Add_Tech"
+
         })
     }
-
-    // console.info("Associations are")
     return tech;
 }
 

@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes, emp, address) => {
+module.exports = (sequelize, DataTypes, emp, address, Tech) => {
 
 
     const empAddress = sequelize.define('address', {
@@ -16,25 +16,25 @@ module.exports = (sequelize, DataTypes, emp, address) => {
         },
         User_refer_id: {
             type: DataTypes.INTEGER,
-            references: {
-                model: emp,
-                key: 'id'
-            }
         }
     }, {
+        modelName: 'tag',
         createdAt: true,
         updatedAt: false
     })
 
-    // empAddress.associate = models => {
+    empAddress.associate = (models) => {
+        empAddress.hasMany(models.Tech, {
+            foreignKey: 'Tech_refer_id',
+            as: "Add_Tech"
+        })
+        empAddress.belongsTo(models.emp, {
+            foreignKey: 'User_refer_id',
+            as: 'employeeAddress'
+        });
 
-    //     emp.hasOne(empAddress, {
-    //         foreignKey: 'User_refer_id',
-    //     });
-    //     empAddress.belongsTo(emp, {
-    //         foreignKey: 'User_refer_id',
-    //     });
-    // }
+
+    }
     return empAddress;
 }
 

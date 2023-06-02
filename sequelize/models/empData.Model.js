@@ -1,5 +1,4 @@
-// let address = require("./add.model")
-module.exports = (sequelize, DataTypes, address) => {
+module.exports = (sequelize, DataTypes, Address, Techs) => {
   let emp = sequelize.define('emp_data', {
     firstName: {
       type: DataTypes.STRING,
@@ -29,7 +28,11 @@ module.exports = (sequelize, DataTypes, address) => {
     deletedAt: "Soft_delete" // 
   });
 
-  // emp.hasOne(address);
+  emp.associate = (models) => {
+    emp.hasMany(models.Address, {
+      foreignKey: 'User_refer_id',
+      as: "employeeAddress"
+    });
+  }
   return emp;
-  console.log(emp === sequelize.models.emp_data);
 }

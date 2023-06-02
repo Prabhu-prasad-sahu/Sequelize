@@ -1,8 +1,7 @@
 
-const { emp, address, refer, tech } = require("../models/db")
-
+const { emp, Address, refer, Tech, employeeModel, employeeTechnologyModel } = require("../models/db")
 const { Op, Sequelize, QueryTypes } = require('sequelize');
-const Techdata = require("../models/tech.model");
+;
 
 const add = async (req, rsp) => {
         let User = await emp.create(
@@ -129,77 +128,14 @@ let oneToMany = async (req, rsp) => {
 
 let manyToMany = async (req, rsp) => {
         try {
-                // let User = await emp.create({
-                //         firstName: req.body.firstName,
-                //         lastName: req.body.lastName
-                // })
-                // if (User && User.id) {
-                //         const add = await address.create({
-                //                 city: req.body.city,
-                //                 state: req.body.state,
-                //                 district: req.body.district,
-                //                 User_refer_id: User.id
-                //         })
-                //         console.log(User, add);
-                //         try {
-                //                 if (User.id && add.id) {
-                //                         debugger;
-                //                         console.info('in IF >> ', User.id + " -- " + add.id)
-                //                         const addressRef = refer.create({
-                //                                 empID: User.id,
-                //                                 addressID: add.id
-                //                         })
-                //                         console.info('Add Ref >>> ', addressRef)
-                //                 }
-                //         } catch (error) {
-                //                 console.log(error);
-                //         }
-                // }
-                // rsp.send("successfully created")
+                //         const amidala = await employeeModel.create({ firstName: req.body.firstName, lastName: req.body.lastName });
+                //         const queen = await employeeTechnologyModel.create({ technology_title: req.body.technology_title });
+                //         await amidala.addEmployeeTechnologyModel(queen, { through: 'employee_tech' });
+                const result = await employeeModel.findAll({
+                        include: employeeTechnologyModel
+                });
+                rsp.send(result);
 
-
-                // =========================================
-                let findUser = await emp.findAll({
-                        // attributes: ['firstName', 'lastName'],
-                        include: [{
-                                model: address,
-                                as: 'Address_details',
-                                attributes: ['city', 'district', 'state']
-                        }],
-                        // where: {
-                        //         id: 2
-                        // }
-                })
-                rsp.json({ user: findUser })
-                // =====================================================
-                // let updateEmp = await emp.findAll({
-                //         where: {
-                //                 id: req.body.id
-                //         },
-                //         include: [{
-                //                 model: address,
-                //                 as: 'address_details',
-                //                 attributes: ['city', 'district', 'state']
-                //         }]
-                // })
-                // rsp.send(updateEmp);
-                // if (updateEmp.id) {
-                //         await address.create({
-                //                 city: req.body.city,
-                //                 state: req.body.state,
-                //                 district: req.body.district,
-                //                 User_refer_id: updateEmp.id
-                //         })
-                //         if (updateEmp.id && add.id) {
-                //                 console.info('in IF >> ', User.id + " -- " + add.id)
-                //                 const addressRef = refer.create({
-                //                         empID: id,
-                //                         addressID: add.id
-                //                 })
-                //                 console.info('Add Ref >>> ', addressRef)
-                //         }
-                // }
-                // rsp.send("updated")
         } catch (error) {
                 rsp.send(error)
         }
@@ -220,61 +156,76 @@ let paranoid = async (req, rsp) => {
         }
 }
 
-let eagerLoading = async (req, rsp) => {
-        try {
-                let User = await emp.findAll({
-                        include: [{
-                                model: address,
-                                attributes: ['city', 'district', 'state'],
-                                required: false,
-                                right: true
-                                //if u use INNER JOIN then required : true 
-                                //if u use LEFT OUTER JOIN then no neeed to (required : true)
-                                //if u use RIGHT OUTER JOIN then neeed to (required : true , right : true)
-
-                        }]
-
-                })
-                rsp.send(User);
-        } catch (error) {
-                rsp
-        }
-}
 
 let addTech = async (req, rsp) => {
         try {
-                // let User = await emp.create({
-                //         firstName: req.body.firstName,
-                //         lastName: req.body.lastName
-                // })
-                // if (User && User.id) {
-                //         let addtech = await tech.create({
-                //                 technology: req.body.technology,
-                //                 Tech_refer_id: User.id
-                //         })
+                try {
+                        //         let empData = await Address.create({
+                        //                 city: req.body.city,
+                        //                 state: req.body.state,
+                        //                 district: req.body.district,
+                        //                 employeeAddress: {
+                        //                         firstName: req.body.firstName,
+                        //                         lastName: req.body.lastName,
+                        //                 },
+                        //                 Add_Tech: {
+                        //                         technology: req.body.technology
+                        //                 }
+                        //         }, {
+                        //                 include: [{
+                        //                         model: emp,
+                        //                         as: 'employeeAddress'
+                        //                 }, {
+                        //                         model: Tech,
+                        //                         as: 'Add_Tech'
+                        //                 }]
+                        //         });
+                        //         rsp.send({ data: empData })
+                } catch (error) {
+                        console.log(error);
+                }
+                // ====================================================================
+                try {
 
-                // }
-                // rsp.send("created succsessfully");
-                // =====================================================================
+                        // 
+                        let eagerLoading = await emp.findAll({
+                                // include: [{ all: true }],
+                                include: [{
+                                        model: Address,
+                                        as: "employeeAddress",
+                                        attributes: ["city", "state", "district"],
+                                        include: [{
+                                                model: Tech,
+                                                as: "Add_Tech",
+                                                required: false,
+                                                right: true
+                                        }]
+                                }],
+                        })
+                        rsp.send(eagerLoading);
+                        //if u use INNER JOIN then required : true 
+                        //if u use LEFT OUTER JOIN then no neeed to (required : true)
+                        //if u use RIGHT OUTER JOIN then neeed to (required : true , right : true)
+                        //get all data from referance table to use { all: true } 
+                        // =====================================
 
-                // Find one by fullName
+                        // let lazyLoading = await emp.findOne()
+                        // const data = await lazyLoading.getTechs();
+                        // rsp.json({ DATA: data })
+                        // rsp.send(await lazyLoading.getTech())
+                        // rsp.send(lazyLoading)
 
-
-                // include: [{
-                //         model: tech,
-                // }],
-
-
-                let add = await emp.findAll({
-                        include: [{ model: tech }]
-                })
-
-                console.info("emp-find all >>> ", add)
-                rsp.json({ data: add })
+                } catch (exp) {
+                        console.error(exp)
+                }
         } catch (error) {
                 rsp.send("error >>", error)
         }
 }
 
-module.exports = { users, bio, add, GetSetVertual, oneToOne, oneToMany, manyToMany, paranoid, eagerLoading, addTech }
+
+module.exports = {
+        users, bio, add, GetSetVertual, oneToOne, oneToMany, manyToMany, paranoid,
+        addTech
+}
 
