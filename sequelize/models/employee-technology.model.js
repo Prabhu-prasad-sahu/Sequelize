@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes, employeeModel) => {
 
 
     EmployeeTechnologyModel.associate = (models) => {
-        EmployeeTechnologyModel.belongsToMany(models.employeeModel, { through: 'employee_tech' })
+        EmployeeTechnologyModel.belongsToMany(models.employeeModel, { through: 'employee_tech', as: 'EmpData' })
     }
 
     return EmployeeTechnologyModel;

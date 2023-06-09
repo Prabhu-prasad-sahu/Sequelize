@@ -1,4 +1,4 @@
-module.exports = (sequelize, DataTypes, emp, address, Tech) => {
+module.exports = (sequelize, DataTypes) => {
 
 
     const empAddress = sequelize.define('address', {

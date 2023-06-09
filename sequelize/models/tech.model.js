@@ -1,5 +1,5 @@
 
-module.exports = (sequelize, DataTypes, Address) => {
+module.exports = (sequelize, DataTypes) => {
 
     const tech = sequelize.define('Tech', {
         technology: {
@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes, Address) => {
     tech.associate = (models) => {
         tech.belongsTo(models.Address, {
             foreignKey: 'Tech_refer_id',
-            // as: "Add_Tech"
+            as: "Add_Tech"
 
         })
     }
